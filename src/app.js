@@ -3,6 +3,8 @@ import mongoose from "mongoose"
 import handlebars from "express-handlebars"
 import { Server } from "socket.io"
 import { __dirname } from "./utils.js"
+//importo cookie-parser
+import cookieParser from 'cookie-parser'
 
 import productRouter from "./routes/product.router.js"
 import cartRouter from "./routes/carts.router.js"
@@ -39,6 +41,8 @@ try {
 
     app.use(express.json())
     app.use(express.urlencoded({ extended: true }))
+    //inicializo cookie-parser
+    app.use(cookieParser())
 
     //app.use(express.static('./src/public'))
     app.use('/static', express.static(`${__dirname}/public`))
