@@ -2,28 +2,38 @@ import { Router } from 'express'
 import ProductManager from '../dao/database/ProductManager.js'
 import { uploader } from '../uploader.js'
 
-const product = new ProductManager()
+const productManager = new ProductManager()
 const router = Router()
 
 router.get("/", async (req, res) => {
-  const products = parseInt(req.query.limit)
-  if (!products) {
-    return res.status(200).send({ status: 'OK', data: await product.getProducts() })
-  }
+    try {
+      const { limit, page, category, sort } = req.query
 
-  const allProducts = await product.getProducts()
-  const limitProduct = allProducts.slice(0, products)
-  return res.status(200).send({ status: 'OK', data: limitProduct })
-})
+      const result = await productManager.getProducts(limit, page, category, sort)
+      console.log(result)
+      
+      res.status(200).send({ status: 'OK', data: result })
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+  })
 
 router.get("/:pid", async (req, res) => {
-  const pid = req.params
-  const productById = await product.getProductbyId(pid)
+  try {
+    const pid = req.params
+    if (!pid) {
+        return res.status(404).send(`El producto no existe`)
+    } 
+    const productById = await productManager.getProductById(pid)
 
-  return res.status(200).send({ status: 'OK', data: productById })
+    res.status(200).send({ status: 'OK', data: productById })
+  } catch (err) {
+    res.status(500).send({ status: 'ERR', data: err.message })
+  }
 })
 
 router.post("/", uploader.single('thumbnail'), async (req, res) => {
+  try {
     if (!req.file) return res.status(400).send({ status: 'FIL', data: 'No se pudo subir el archivo' })
 
     const { title, description, price, category, status, code, stock } = req.body
@@ -42,23 +52,40 @@ router.post("/", uploader.single('thumbnail'), async (req, res) => {
         stock
     }
 
-    const result = await product.addProduct(newProduct)
+    const result = await productManager.addProduct(newProduct)
     res.status(200).send({ status: 'OK', data: result })
+  } catch (err) {
+    res.status(500).send({ status: 'ERR', data: err.message })
+  }
 })
 
 router.put("/:pid", async (req, res) => {
-  const pid = req.params.pid
-  const objModif = req.body
-  const productUpdated = await product.updateProduct(pid, objModif)
+  try {
+    const { pid } = req.params
+    const { title, description, code, price, thumbnail, stock, category, status } = req.body
+
+    if (!title, !description, !code, !price, !thumbnail, !stock, !category, !status) {
+      res.status(400).send({ status: 'ERR', data: err.message})
+    }
+
+    const productUpdated = await productManager.updateProduct(pid, {title, description, code, price, thumbnail, stock, category, status })
 
   return res.status(200).send({ status: 'OK', data: productUpdated })
+  } catch (err) {
+    res.status(500).send({ status: 'ERR', data: err.message })
+  }
 })
 
 router.delete("/:pid", async (req, res) => {
-  const pid = req.params.pid
-  const productDelete = await product.deleteProductById(pid)
-
-  return res.status(200).send({ status: 'OK', data: productDelete })
+  try {
+    const pid = req.params.pid
+    const productDeleted = await productManager.deleteProductById(pid)
+  
+    return res.status(200).send({ status: 'OK', data: productDeleted })
+  
+  } catch (err) {
+    res.status(500).send({ status: 'ERR', data: err.message })
+  }
 })
 
 export default router

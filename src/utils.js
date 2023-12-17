@@ -1,4 +1,3 @@
-import * as url from 'url'
-
-export const __filename = url.fileURLToPath(import.meta.url)
-export const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+import {dirname} from "path"
+import { fileURLToPath } from "url"
+export const __dirname=dirname(fileURLToPath(import.meta.url))

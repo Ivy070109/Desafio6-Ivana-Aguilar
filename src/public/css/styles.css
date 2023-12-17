@@ -12,7 +12,27 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+#titlePrincipal {
+  text-align: center;
+  width: 100%;
+  font-size: 2rem;
+  margin: .5rem;
+  padding: 1rem;
+}
   
+.controller{
+  display: flex;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  font-size: 2rem;
+  margin: 1rem;
+  padding: 1rem;
+  align-content: center;
+  justify-content: center;
+}
+
 #list-products{
   position: relative;
   display: flex;
@@ -71,6 +91,10 @@ button {
   color: white;
   margin-bottom: 5px;
   font-size: 16px;
+}
+
+button:hover {
+  cursor: pointer;
 }
 
 #formProduct {
@@ -135,4 +159,24 @@ button {
   color: white;
   margin: 16px 0;
   font-size: 16px;
+}
+
+.page-item {
+  color: black;
+  font-size: 1rem;
+  font-style: normal;
+}
+
+.page-link {
+  font-style: normal;
+}
+
+.form-cart {
+  margin: 1rem;
+}
+
+a {
+  text-decoration: none;
+  margin: 1rem;
+  color: black;
 }

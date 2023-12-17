@@ -1,16 +1,16 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose"
 
 mongoose.pluralize(null)
 
-const collection = "messages"
+const collection = 'messages'
 
 const schema = new mongoose.Schema({
     correo: {
         type: String,
-        required: true, 
+        required: true,
     },
     mensaje: {
-        type: String,
+        type: String, 
         required: true,
     },
 })

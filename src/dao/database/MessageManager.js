@@ -1,28 +1,30 @@
-import messageModel from '../models/message.model.js'
+import messageModel from "../models/message.model.js"
 
-class MessageManager {
+class MessagesManager {
     constructor() {
     }
 
+    //obtener los mensajes guardados en database
     getMessages = async () => {
         try {
             const lookMessage = await messageModel.find().lean()
 
-            return lookMessage
+            return lookMessage    
         } catch (err) {
-            return console.error(err)
+            return err.message
         }
     }
 
+    //crear y guardar los mensajes en database
     createMessage = async (message) => {
         try {
             const newMessage = await messageModel.create(message)
 
             return newMessage
         } catch (err) {
-            return console.error(err)
+            return err.message
         }
     }
 }
 
-export default MessageManager
+export default MessagesManager

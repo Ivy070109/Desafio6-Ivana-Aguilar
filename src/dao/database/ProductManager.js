@@ -1,67 +1,89 @@
-import productModel from '../models/products.model.js'
+import productModel from "../models/products.model.js"
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 class ProductManager {
     constructor() {
     }
 
-    //Creación de producto
-    addProduct = async (newProduct) => {
-        try {
-            return await productModel.create(newProduct)
-        } catch (err) {
-            return console.error(err)
-        }
-    }
-    
-    //leer productos
+    //leer los productos
     readProducts = async () => {
         try {
-            return await productModel.find().lean()
+            const products = await productModel.find().lean()
+            return products
         } catch (err) {
-            return console.error(err)
+            return err.message
         }
     }
 
-    //Objetener todos los productos
-    getProducts = async () => {
+    //creación de productos
+    addProduct = async (product) => {
         try {
-            const products = await this.readProducts()
-            return products
+            const productCreated = await productModel.create(product)
+            return productCreated
         } catch (err) {
-            return console.error(err)
+            return err.message
+        }
+    }
+
+    //obtener todos los productos    
+    getProducts = async (limit, page, category, sort) => {
+        try {
+            let query = {}
+            
+        if (category) {
+            query.category = category
+        }
+    
+        let options = {
+            limit: parseInt(limit) || 10,
+            page: parseInt(page) || 1,
+            lean: true,
+        }
+    
+        if (sort) {
+            options.sort = {
+                price: sort === 'asc' ? 1 : -1
+            }
+        }
+    
+        const result =  await productModel.paginate(query, options)
+        return result
+        } catch (err) {
+            return err.message
         }
     }
 
     //Obtener productos según su id
-    getProductbyId = async (pid) => {
+    getProductById = async (pid) => {
         try {
             const productById = await productModel.findById(pid)
-            if(!productById) {
+            if (!productById) {
                 return "El producto no existe"
             } else {
                 return productById
             }
         } catch (err) {
-            return console.error(err)
-        }
-    }
-  
-    //Borrar producto según su id
-    deleteProductById = async (pid) => {
-        try {
-            const productDetected = await productModel.findByIdAndDelete(pid)
-            return productDetected
-        } catch (err) {
-            return console.error(err)
+            return err.message
         }
     }
 
     //Actualizar productos según su id
     updateProduct = async (pid, objModif) => {
         try {
-            return productModel.findByIdAndUpdate(pid, objModif)
-        } catch (error) {
-            return console.error(error)
+            const productUpdated = await productModel.findByIdAndUpdate(pid, { $set: objModif })
+            return productUpdated
+        } catch (err) {
+            return err.message
+        }
+    }
+
+    //Borrar productos según su id
+    deleteProductById = async (pid) => {
+        try {
+            const deleteProduct = await productModel.deleteOne({ _id: pid })
+            return deleteProduct
+        } catch (err) {
+            return err.message
         }
     }
 }

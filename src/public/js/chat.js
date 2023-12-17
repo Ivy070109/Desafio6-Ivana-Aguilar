@@ -17,6 +17,14 @@ if(!user) {
     })
 }
 
+socket.on('user_connected', data => {
+    Swal.fire({
+        text: `${data.user} se ha conectado!`,
+        toast: true, 
+        position: 'top-right'
+    })
+})
+
 const form = document.getElementById('formulario')
 
 form.onsubmit = (e) => {

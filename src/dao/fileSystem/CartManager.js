@@ -1,127 +1,61 @@
-import fs from 'fs'
-import ProductManager from './ProductManager.js'
+import { promises as fs } from 'fs'
+import { nanoid } from 'nanoid'
+import ProductManager from '../components/ProductManager.js'
 //lo importo para poder ver lo que los carritos incluyan
 
-const products = new ProductManager()
-class CartManager{
+const productAll = new ProductManager
+class CartManager {
     constructor() {
-        this.path 
-        //importo el json a una carpeta aparte, ya que presentaba errores cuando la mantenia en la misma carpeta y de paso es más limpia la organización
         this.cart = []
+        this.path = './files/carts.json'
     }
 
-    //leer los carritos
     readCarts = async () => {
-        try {
-            const carts = await fs.promises.readFile(this.path, { encoding: 'utf-8'})
-            const cartsArray = JSON.parse(carts)
-
-            return cartsArray
-        } catch (err) {
-            return console.error(err)
-        }
+        const carts = await fs.readFile(this.path, "utf-8")
+        return JSON.parse(carts)
     }
 
-    //buscar existencia según su id
-    exist = async (cid) => {
-        try {
-            const carts = await this.readCarts()
-            const findCart = carts.find(cart => cart.id === cid)
-
-            return findCart
-        } catch (err) {
-            return console.error(err)
-        }
-    }
-
-    //escribir en el carrito
     writeCarts = async (carts) => {
-        try {
-            const write = await fs.promises.writeFile(this.path, JSON.stringify(carts, null, 2))
-
-            return write
-        } catch (err) {
-            return console.error(err)
-        }
-    }
-    
-    //Generar id autoincrementable
-    generateCartId = async () => {
-        try {
-            if (fs.existsSync(this.path)) {
-            //busco la existencia de ésta ruta con éste método predeterminado
-                const cartList = await this.readCarts()
-                const counter = cartList.length
-                if (counter == 0) {
-                    return 1
-                } else {
-                    return cartList[counter - 1 ].id + 1
-                }
-            }
-        } catch (err) {
-            return console.error(err)
-        }
+        await fs.writeFile(this.path, JSON.stringify(carts, null, '\t'))
     }
 
-    //crear carrito
+    exist = async (id) => {
+        const carts = await this.readCarts()
+        return carts.find(cart => cart.id === id)
+    }
+
     addCarts = async () => {
-        try {            
-            const oldCarts = await this.readCarts()
-            const id = await this.generateCartId()
-            //establezco un id automático e irrepetible de una sola cifra
-            const newCart = [...oldCarts, 
-                {   
-                    id : id, 
-                    products : []
-                }]
-            await this.writeCarts(newCart)
+        const oldCarts = await this.readCarts()
+        const id = nanoid(3)
+        const cartsConcat = [{id : id, products : []}, ...oldCarts]
+        await this.writeCarts(cartsConcat)
 
-            return "Carrito Agregado"    
-        } catch (err) {
-            return console.error(err)
-        }
+        return "Carrito Agregado"
     }
 
-    //obtener el carrito según su id
-    getCartById = async (cid) => {
-        try {
-            const cartById = await this.exist(cid)
+    getCartById = async (id) => {
+        const cartById = await this.exist(id)
             if(!cartById) {
-                return "Ese carrito no existe"
-            } else {
-                return cartById
+                return "Carrito no encontrado"
             }
-        } catch (err) {
-            return console.error(err)
-        }
+        return cartById
     }
 
-    //agregar producto en carrito
     addProductInCart = async (cartId, productId) => {
-        try {
-            const cartsArray = await this.readCarts()
-            const cart = cartsArray.find(e => e.id === cartId)
+        const listaCarts = await this.readCarts()
+            const cart = listaCarts.find(e => e.id === cartId)
             const productIndex = cart.products.findIndex(p => p.productId === productId)
-
+      
             if (productIndex !== -1) {
-                cart.products[productIndex].quantity++
+            cart.products[productIndex].quantity++
             } else {
-                cart.products.push({
-                    productId,
-                    quantity: 1
-                })
-            }
-            await this.writeCarts(cartsArray)
-
-            return "Producto Agregado al carrito"
-        } catch (err) {
-            return console.error(err)
+            cart.products.push({
+                productId,
+                quantity: 1
+            })
         }
+        await this.writeCarts(listaCarts)
+        return "Producto Agregado al carrito"
     }
 }
-
-//const carts = new CartManager()
-//carts.addCarts()
-//carts.getCartById(1)
-
 export default CartManager
