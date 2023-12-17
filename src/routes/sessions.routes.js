@@ -2,6 +2,25 @@ import { Router } from 'express'
 
 const router = Router()
 
+//middleware de autenticación del admin
+const auth = (req, res, next) => {
+    try {
+        if (req.session.user.admin) {
+            if (req.session.user.admin === true) {
+                next()
+            } else {
+                res.status(403).send({ status: 'ERR', data: 'Usuario no admin', role: 'user' })
+            }
+        } else {
+            res.status(401).send({ status: 'ERR', data: 'Usuario no autorizado' })
+        }
+    } catch (err) {
+        res.status(500).send({ status: 'ERR', data: err.message })
+    }
+}
+
+//abriendo session directo
+/*
 router.get('/', async (req, res) => {
     try {
         if (req.session.log) {
@@ -15,6 +34,7 @@ router.get('/', async (req, res) => {
         res.status(500).send({ status: 'ERR', data: err.message })
     }
 })
+*/
 
 router.get('/logout', async (req, res) => {
     try {
@@ -30,14 +50,15 @@ router.get('/logout', async (req, res) => {
     }
 })
 
-//pequeña autenticación
-router.get('/admin', async (req, res) => {
+//pequeña autenticación del admin, utilizaré un middleware para ésto  
+router.get('/admin', auth, async (req, res) => {
     try {
-        if (req.session.user.admin === true) {
-            res.status(200).send({ status: 'OK', role: 'admin'})
-        } else {
-            res.status(200).send({ status: 'OK', role: `user` })
-        }
+        // if (req.session.user.admin === true) {
+        //     res.status(200).send({ status: 'OK', role: 'admin'})
+        // } else {
+        //     res.status(200).send({ status: 'OK', role: `user` })
+        // }
+        res.status(200).send({ status: 'OK', data: 'Éstos son los datos privados'})
     } catch (err) {
         res.status(500).send({ status: 'ERR', data: err.message })
     }
