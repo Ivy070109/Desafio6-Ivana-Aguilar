@@ -34,10 +34,9 @@ router.get('/carts', async (req, res) => {
     res.render('carts', { cartsProducts })
 })
 
-//cookies -podrá borrarse
-//router.get('/login', async (req, res) => {
-    //res.render('cookieForm', {})
-//})
+router.get('/register', async (req, res) => {
+    res.render('register', {})
+})
 
 router.get('/login', async (req, res) => {
     res.render('login', {})

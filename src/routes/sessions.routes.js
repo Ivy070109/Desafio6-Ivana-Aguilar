@@ -30,12 +30,25 @@ router.get('/logout', async (req, res) => {
     }
 })
 
+//pequeña autenticación
+router.get('/admin', async (req, res) => {
+    try {
+        if (req.session.user.admin === true) {
+            res.status(200).send({ status: 'OK', role: 'admin'})
+        } else {
+            res.status(200).send({ status: 'OK', role: `user` })
+        }
+    } catch (err) {
+        res.status(500).send({ status: 'ERR', data: err.message })
+    }
+})
+
 router.post('/login', async (req, res) => {
     try { 
-        const { user, pass } = req.body
-        //reemplazar user por email. admin: true, sino user
-        if(user === 'cperren' && pass === 'abc123') {
-            req.session.user = { username: user, admin: true }
+        const { email, password } = req.body
+
+        if(email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
+            req.session.user = { username: email, admin: true }
             res.status(200).send({ status: 'OK', data: `Sesión iniciada` })
         } else {
             res.status(401).send({ status: 'ERR', data: `Datos no válidos` })
