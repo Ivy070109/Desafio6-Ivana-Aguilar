@@ -8,6 +8,11 @@ const cartManager = new CartManager()
 const router = Router()
 
 router.get('/', async (req, res) => {
+    if (req.session.user) {
+        res.render('profile', { user: req.session.user })
+    }else {
+        res.redirect('/login')
+    } 
     const productsList = await productManager.getProducts({})
     res.render('home', { productsList })
 })
@@ -40,6 +45,14 @@ router.get('/register', async (req, res) => {
 
 router.get('/login', async (req, res) => {
     res.render('login', {})
+})
+
+router.get('/profile', async (req, res) => {
+    if (req.session.user) {
+        res.render('profile', { user: req.session.user })
+    } else {
+        res.redirect('/login')
+    }
 })
 
 export default router

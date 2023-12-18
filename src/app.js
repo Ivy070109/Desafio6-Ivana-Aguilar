@@ -7,6 +7,8 @@ import { Server } from "socket.io"
 import cookieParser from 'cookie-parser'
 //importo express-session
 import session from 'express-session'
+//importo mongostore
+import MongoStore from 'connect-mongo'
 
 import productRouter from "./routes/product.router.js"
 import cartsRouter from "./routes/carts.router.js"
@@ -46,10 +48,13 @@ try {
     app.use(express.urlencoded({ extended: true }))
     app.use(cookieParser('keysectretIvy'))
     //activo sessions y cookie-parser
+    //mi firma del cookies
+    //inicializo mongo connect como mi nuevo modo de almacenamiento de session 
     app.use(session({
+        store: MongoStore.create({ mongoUrl: MONGOOSE_URL, mongoOptions: {}, ttl: 1800, clearInterval: 5000 }),
         secret: 'keysectretIvy',
-        resave: true, 
-        saveUninitialized: true
+        resave: false, 
+        saveUninitialized: false
     }))
 
     //app.use(express.static('./src/public'))

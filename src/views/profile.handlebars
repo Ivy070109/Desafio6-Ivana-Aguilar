@@ -1,0 +1,16 @@
+<div id="titlePrincipal">
+    <h1>Perfil de Usuario</h1>
+</div>
+
+<arcticle class="container-profile">
+    <h3>Usuario: {{user.username}}</h3>
+    <h3>Admin: {{user.admin}}</h3>
+
+    <div>
+        <form action="/api/sessions/logout" method="get">
+            <button type="submit" class="btn btn-success">Log Out</button>
+        </form>
+    </div>
+</arcticle>
+
+

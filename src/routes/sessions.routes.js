@@ -19,23 +19,7 @@ const auth = (req, res, next) => {
     }
 }
 
-//abriendo session directo
-/*
-router.get('/', async (req, res) => {
-    try {
-        if (req.session.log) {
-            req.session.log++
-            res.status(200).send({ status: 'OK', data: `Cantidad de visitas: ${req.session.log}` })
-        } else {
-            req.session.log = 1
-            res.status(200).send({ status: 'OK', data: `¡Bienvenido!` })
-        }
-    } catch (err) {
-        res.status(500).send({ status: 'ERR', data: err.message })
-    }
-})
-*/
-
+// cerrar sesion
 router.get('/logout', async (req, res) => {
     try {
         req.session.destroy((err) => {
@@ -58,12 +42,13 @@ router.get('/admin', auth, async (req, res) => {
         // } else {
         //     res.status(200).send({ status: 'OK', role: `user` })
         // }
-        res.status(200).send({ status: 'OK', data: 'Éstos son los datos privados'})
+        res.status(200).send({ status: 'OK', data: 'Éstos son los datos para el administrador'})
     } catch (err) {
         res.status(500).send({ status: 'ERR', data: err.message })
     }
 })
 
+//log in harcodeado de admin
 router.post('/login', async (req, res) => {
     try { 
         const { email, password } = req.body
@@ -73,6 +58,20 @@ router.post('/login', async (req, res) => {
             res.status(200).send({ status: 'OK', data: `Sesión iniciada` })
         } else {
             res.status(401).send({ status: 'ERR', data: `Datos no válidos` })
+        }
+    } catch (err) {
+        res.status(500).send({ status: 'ERR', data: err.message })
+    }
+})
+
+router.post('/register', async (req, res) => {
+    try{
+        const { first_name, last_name, email, age, password } = req.body
+
+        if(!first_name || !last_name || !email || !age || !password) {
+            res.status(401).send({ status: 'ERR', data: 'No se puede registrar sin todos los datos' })
+        } else {
+            res.status(200).send({ status: 'OK', data: `Usuario Registrado` })
         }
     } catch (err) {
         res.status(500).send({ status: 'ERR', data: err.message })
