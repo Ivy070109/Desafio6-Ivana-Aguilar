@@ -9,12 +9,11 @@ const router = Router()
 
 router.get('/', async (req, res) => {
     if (req.session.user) {
-        res.render('profile', { user: req.session.user })
+        const productsList = await productManager.getProducts({})
+        res.render('home', { productsList })
     }else {
         res.redirect('/login')
     } 
-    const productsList = await productManager.getProducts({})
-    res.render('home', { productsList })
 })
 
 router.get('/realtimeproducts', (req, res) => {
