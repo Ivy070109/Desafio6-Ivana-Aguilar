@@ -28,7 +28,8 @@ router.get('/logout', async (req, res) => {
             if (err) {
                 res.status(500).send({ status: 'ERR', data: err.message })
             } else {
-                res.status(200).send({ status: 'OK', data: "Sesión finalizada" })
+                //res.status(200).send({ status: 'OK', data: "Sesión finalizada" })
+                res.redirect('/login')
             }
         })
     } catch (err) {
@@ -57,7 +58,8 @@ router.post('/login', async (req, res) => {
 
         if(email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
             req.session.user = { username: email, admin: true }
-            res.status(200).send({ status: 'OK', data: `Sesión iniciada` })
+            //res.status(200).send({ status: 'OK', data: `Sesión iniciada` })
+            res.redirect('/products')
         } else {
             res.status(401).send({ status: 'ERR', data: `Datos no válidos` })
         }
