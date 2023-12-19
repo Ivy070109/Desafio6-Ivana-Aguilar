@@ -25,13 +25,27 @@ router.get('/chat', (req, res) => {
     res.render('chat', {})
 })
 
+//products solo se mostrará luego de login 
 router.get('/products', async (req, res) => {
-    const data = await productManager.getProducts(req.query.page, req.query.limit)
+    if (req.session.user) {
+        const data = await productManager.getProducts(req.query.page, req.query.limit)
     
-    data.pages = []
-    for (let i = 1; i <= data.totalPages; i++) data.pages.push(i)
+        data.pages = []
+        for (let i = 1; i <= data.totalPages; i++) data.pages.push(i)
+    
+        res.render('products', { data, user: req.session.user })    
+    } else {
+        res.redirect('/login')
+    }
+})
 
-    res.render('products', { data })
+//caso de ser necesario mantengo la página profile
+router.get('/profile', async (req, res) => {
+    if (req.session.user) {
+        res.render('profile', { user: req.session.user })
+    } else {
+        res.redirect('/login')
+    }
 })
 
 router.get('/carts', async (req, res) => {
@@ -44,15 +58,12 @@ router.get('/register', async (req, res) => {
 })
 
 router.get('/login', async (req, res) => {
-    res.render('login', {})
+    if (req.session.user) {
+        res.redirect('/profile')
+    } else {
+        res.render('login', {})
+    } 
 })
 
-router.get('/profile', async (req, res) => {
-    if (req.session.user) {
-        res.render('profile', { user: req.session.user })
-    } else {
-        res.redirect('/login')
-    }
-})
 
 export default router

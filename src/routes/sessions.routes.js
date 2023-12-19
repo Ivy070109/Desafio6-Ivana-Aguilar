@@ -1,4 +1,6 @@
 import { Router } from 'express'
+//import usersModels from '../dao/models/users.model.js'
+import usersModel from '../dao/models/users.model.js'
 
 const router = Router()
 
@@ -48,7 +50,7 @@ router.get('/admin', auth, async (req, res) => {
     }
 })
 
-//log in harcodeado de admin
+//login harcodeado de admin
 router.post('/login', async (req, res) => {
     try { 
         const { email, password } = req.body
@@ -65,16 +67,28 @@ router.post('/login', async (req, res) => {
 })
 
 router.post('/register', async (req, res) => {
-    try{
+    try {
         const { first_name, last_name, email, age, password } = req.body
 
-        if(!first_name || !last_name || !email || !age || !password) {
-            res.status(401).send({ status: 'ERR', data: 'No se puede registrar sin todos los datos' })
-        } else {
-            res.status(200).send({ status: 'OK', data: `Usuario Registrado` })
+        const usuarioExistente = await usersModel.findOne({ email })
+
+        if (usuarioExistente) {
+            return res.status(400).json({ status: 'ERR', data: 'El correo ya está registrado.' })
         }
+
+        const newUser = new usersModel({
+            first_name,
+            last_name,
+            email,
+            age,
+            password
+        })
+        
+        await newUser.save()
+
+        res.status(200).json({ status: 'OK', data: 'Usuario registrado' })
     } catch (err) {
-        res.status(500).send({ status: 'ERR', data: err.message })
+        res.status(400).json({ status: 'ERR', data: err.message })
     }
 })
 
