@@ -72,10 +72,10 @@ router.post('/register', async (req, res) => {
     try {
         const { first_name, last_name, email, age, password } = req.body
 
-        const usuarioExistente = await usersModel.findOne({ email })
+        const usersExists = await usersModel.findOne({ email })
 
-        if (usuarioExistente) {
-            return res.status(400).json({ status: 'ERR', data: 'El correo ya está registrado.' })
+        if (usersExists) {
+            return res.status(400).json({ status: 'ERR', data: 'El correo ya está registrado' })
         }
 
         const newUser = new usersModel({
